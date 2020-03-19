@@ -1,0 +1,55 @@
+﻿@model IEnumerable<BlogPost>
+@using Rubenbratsberg.no.Models;
+@{
+    // Pagination
+    Pager pager = null;
+    var blogPostCount = Model.Count();
+    var blogPosts = new List<BlogPost>();
+    if (blogPostCount > 0)
+    {
+        var totalItems = blogPostCount;
+        var postsPerPage = 10;
+        var currentPage = 1;
+        int.TryParse(Request.QueryString["page"], out currentPage);
+        pager = new Pager(totalItems, currentPage, postsPerPage, 5);
+        var skipAmount = currentPage == 1 ? 0 : (currentPage - 1) * postsPerPage;
+        blogPosts = Model.Skip(pager.Skip).Take(pager.Take).ToList();
+    }
+
+}
+@if (pager != null && pager.TotalPages > 1)
+{
+    <div class="pagination-wrapper">
+        <div class="pagination">
+            @{
+                var isPrevDisabled = pager.CurrentPage == 1;
+                var isNextDisabled = pager.CurrentPage == pager.TotalPages;
+            }
+            <a class="mobile-hide" href="?page=1"><<</a>
+
+            @if (isPrevDisabled)
+            {
+                <p class="disabled"><</p>
+            }
+            else
+            {
+                <a href="?page=@(pager.CurrentPage - 1)"><</a>
+            }
+
+            @foreach (int page in pager.Pages)
+            {
+                <a class="@(pager.CurrentPage == page ? "active" : string.Empty) mobile-hide" href="?page=@page">@page</a>
+            }
+
+            @if (isNextDisabled)
+            {
+                <p class="disabled">></p>
+            }
+            else
+            {
+                <a href="?page=@(pager.CurrentPage + 1)">></a>
+            }
+            <a class="mobile-hide" href="?page=@(pager.TotalPages)">>></a>
+        </div>
+    </div>
+}

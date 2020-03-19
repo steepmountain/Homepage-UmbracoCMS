@@ -1,0 +1,58 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Page>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Rubenbratsberg.no.Models;
+@{
+    Layout = "Layout.cshtml";
+    var blogPosts = Model.Children<ContentModels.BlogPost>();
+}
+@Html.Partial("Header", Model)
+    <div class="container">
+        @if (blogPosts.Any())
+        {
+            @Html.Partial("Blog/Pagination", blogPosts);
+        }
+        <main>
+            @foreach (var post in blogPosts)
+            {
+                var postName = post.Title ?? post.Name;
+                var intro = !string.IsNullOrEmpty(post.CustomIntro.ToString()) ? post.CustomIntro : new HtmlStringUtilities().Truncate(post.Body.ToHtmlString(), 150, addElipsis: true, treatTagsAsContent: false);
+                var headerImage = post.HeaderImage as Image;
+                var imagePosition = headerImage?.CustomPosition ?? "50% 50%";
+                var imageAltText = headerImage?.AltText ?? "";
+                var imageUrl = headerImage?.Url ?? "";
+                <article class="card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <p>
+                                Published @post.CreateDate.ToString("MMMM dd yyyy")
+                            </p>
+                            @if (post.UpdateDate != post.CreateDate)
+                            {
+                                <p>Last updated @post.UpdateDate.ToString("MMMM dd yyyy")</p>
+                            }
+                        </div>
+
+                        <div class="card-text">
+
+                            <h2>@postName</h2>
+                            <p>
+                                @intro
+                            </p>
+                        </div>
+                        <div class="card-footer"><a type="button" href="@post.Url">Read</a></div>
+
+                    </div>
+                    @if (headerImage != null)
+                    {
+                        <div class="card-image" style="background-image: url('@imageUrl'); background-position: @imagePosition" title="@imageAltText">
+                        </div>
+                    }
+
+                </article>
+            }
+        </main>
+        @if (blogPosts.Any())
+        {
+            @Html.Partial("Blog/Pagination", blogPosts);
+        }
+    </div>

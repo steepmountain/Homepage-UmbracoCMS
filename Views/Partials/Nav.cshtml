@@ -1,0 +1,22 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<IPublishedContent>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    var rootNode = Model.Root();
+    var rootChildren = rootNode.Descendants<ContentModels.Page>();
+}
+<nav>
+    <a class="link" href="/">@rootNode.Name</a>
+    @foreach (var child in rootChildren)
+    {
+        var isExternal = !string.IsNullOrEmpty(child.ExternalUrl);
+        if (isExternal)
+        {
+            <a class="link" target="_blank" href="@child.ExternalUrl">@child.Name</a>
+        }
+        else
+        {
+            <a class="link" href="@child.Url">@child.Name</a>
+
+        }
+    }
+</nav>

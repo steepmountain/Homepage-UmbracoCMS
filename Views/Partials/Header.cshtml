@@ -1,0 +1,17 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Page>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    var rootNode = Model.Root() as ContentModels.Page;
+    var rootChildren = rootNode.Children;
+    var headerUrl = Model.Header?.Url ?? rootNode.Header.Url;
+}
+<header style="background-image: url('@headerUrl')">
+    <div class="content-wrapper">
+        <h1>
+            @Model.Headline
+        </h1>
+        <div class="body-text">
+            @Model.Body
+        </div>
+    </div>
+</header>
